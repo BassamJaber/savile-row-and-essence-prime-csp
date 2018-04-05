@@ -1,0 +1,4 @@
+language ESSENCE' 1.0
+letting count_CD be 2
+letting count_CHOCO be 4
+letting count_COFFEE be 1

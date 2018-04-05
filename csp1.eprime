@@ -1,0 +1,94 @@
+language ESSENCE' 1.0
+
+given count_CD, count_CHOCO, count_COFFEE : int
+
+letting   CD_INDEX = 1
+letting	  SOCKS_INDEX = 2
+letting   CHOCO_INDEX = 3
+letting	  COFFEE_INDEX = 4
+
+letting   CD_VALUE = 10
+letting	  SOCKS_VALUE = 7
+letting   CHOCO_VALUE = 4
+letting	  COFFEE_VALUE = 12
+
+letting   MUM_INDEX = 1
+letting	  BROTHER_INDEX = 2
+letting   GRANDMA_INDEX = 3
+letting	  GRANDPA_INDEX = 4
+letting   COUSIN_INDEX = 5
+letting	  AUNT_INDEX =6
+letting   UNCLE_INDEX = 7
+letting	  OTHER_INDEX = 8
+
+$matrix represents the variables inside the CSP problem
+find M: matrix indexed by [int(1..4), int(1..8)] of int(0..1)
+
+such that 
+
+
+$1. Each person must get exactly one present
+$ by default each column should contain only one value that represents one present
+
+	forAll column : int(1..8) .
+	    (sum row: int(1..4) . M[row,column]) = 1 ,
+
+		
+
+$2. You have a total budget of e52
+	((sum column: int(1..8) . M[CD_INDEX,column])*CD_VALUE +
+	(sum column: int(1..8) . M[SOCKS_INDEX,column])*SOCKS_VALUE +
+	(sum column: int(1..8) . M[CHOCO_INDEX,column])*CHOCO_VALUE+
+	(sum column: int(1..8) . M[COFFEE_INDEX,column])*COFFEE_VALUE )<=52 ,
+
+
+$3. Your mum, brother, and significant other must get different presents
+
+	forAll row : int(1..4) .
+	    alldifferent_except([M[row,MUM_INDEX], M[row,BROTHER_INDEX] , M[row,OTHER_INDEX] ],0),
+
+$4. Your uncle and cousin must get different presents
+
+	forAll row : int(1..4) .
+		alldifferent_except([M[row,COUSIN_INDEX], M[row,UNCLE_INDEX]],0),
+
+$5. Your grandparents must get different presents
+
+	forAll row : int(1..4) .
+		alldifferent_except([M[row,GRANDMA_INDEX], M[row,GRANDPA_INDEX]],0),
+
+$6. Your mum and uncle must get different presents
+
+	forAll row : int(1..4) .
+		alldifferent_except([M[row,MUM_INDEX], M[row,UNCLE_INDEX]],0),
+
+$7. You cannot get chocolates for your mum, brother, significant other, or grandpa
+
+	M[CHOCO_INDEX,MUM_INDEX] = 0,
+	M[CHOCO_INDEX,BROTHER_INDEX] = 0,
+	M[CHOCO_INDEX,GRANDPA_INDEX] = 0,
+	M[CHOCO_INDEX,OTHER_INDEX] = 0,
+
+
+$8. Your cousin must not get socks
+	M[SOCKS_INDEX,COUSIN_INDEX] = 0,
+
+
+$9. There is only one coffee mill in the shop
+
+	(sum i: int(1..8) . M[COFFEE_INDEX,i]) <= count_COFFEE,
+
+
+$10. There are no more than 2 CDs in the shop
+
+	(sum i: int(1..8) . M[CD_INDEX,i]) <= count_CD,
+
+	
+$11. There are no more than 4 boxes of chocolates in the shop
+
+	(sum i: int(1..8) . M[CHOCO_INDEX,i]) <= count_CHOCO,
+
+$12. Your brother must get a CD
+
+	M[CD_INDEX,BROTHER_INDEX] = 1
+	
